@@ -93,12 +93,13 @@ class OrderController extends Controller
                     if ($voucher->activation_date && now()->lessThan($voucher->activation_date)) {
                         throw new \Exception("Voucher {$voucher->code} is not active yet.");
                     }
+
+                    if (now()->greaterThanOrEqualTo($voucher->activation_date) && now()->lessThanOrEqualTo($voucher->expiry_date)) {
+                        $voucher->update(['is_active' => true]);
+                    }
                 }
 
 
-                if (now()->greaterThanOrEqualTo($voucher->activation_date) && now()->lessThanOrEqualTo($voucher->expiry_date)) {
-                    $voucher->update(['is_active' => true]);
-                }
 
                 if ($voucher->is_active && now()->lessThanOrEqualTo($voucher->expiry_date)) {
                     $discount = $totalPrice * ($voucher->discount / 100);
